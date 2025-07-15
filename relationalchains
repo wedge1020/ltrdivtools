@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+### 
+### relationalchains - a script to generate initial relational chains content for
+###                    a puzzle solving experience.
+### 
+###        usage: relationalchains [OPTION..] PUZZLE
+###               relationalchains [OPTION..] < PUZZLE
+###    
+###      option - description 
+###     =======   ====================================================================
+###     nolabel - do not display content label
+###       debug - enable bash debugging
+###     verbose - display variable information during runtime
+###        help - display this usage information and exit
+### 
+### NOTE: labels are on by default, and the LABEL environment variable can influence
+###       this behaviour (set to "true" or "false")
+### 
+########################################################################################
+
+########################################################################################
+##
+## Declare variables
+##
+PZLTMP=$(mktemp -p /tmp relationalchains.XXXX)
+REGEX='\<(nolabel|verbose|debug|help)\>'
+
+########################################################################################
+##
+## Parameter processing
+##
+DOLABEL=$(echo "${*}"    | egrep -qio '\<nolabel\>' && echo "false" || echo "true")
+DEBUG=$(echo   "${*}"    | egrep -qio '\<debug\>'   && echo "true"  || echo "false")
+VERBOSE=$(echo "${*}"    | egrep -qio '\<verbose\>' && echo "true"  || echo "false")
+DOHELP=$(echo  "${*}"    | egrep -qio '\<help\>'    && echo "true"  || echo "false")
+ARGS=$(echo    "${*}"    | tr ' ' '\n' | egrep -v "${REGEX}" | tr '\n' ' ')
+ARGS=$(echo    "${ARGS}" | grep -v '^[ ]*$')
+[ "${LABEL}" = "false" ] && DOLABEL="false"
+
+########################################################################################
+##
+## Be verbose, if enabled
+##
+if [ "${VERBOSE}" = "true" ]; then
+    echo "[verbose] VERBOSE: ${VERBOSE}"
+    echo "[verbose] PZLTMP:  ${PZLTMP}"
+    echo "[verbose] ARGS:    ${ARGS}"
+    echo "[verbose] DOLABEL: ${DOLABEL}"
+    echo "[verbose] DEBUG:   ${DEBUG}"
+    echo "[verbose] DOHELP:  ${DOHELP}"
+fi
+
+########################################################################################
+##
+## Transact argument functionality
+##
+[ "${DEBUG}"  = "true" ] && set -x
+[ "${DOHELP}" = "true" ] && cat ${0} | grep '^### ' | sed 's/### //g' && exit 0
+
+########################################################################################
+##
+## Check for STDIN redirection
+##
+if [ -z "${ARGS}" ]; then
+    cat                                                                  >  ${PZLTMP}
+    PZLFILE="${PZLTMP}"
+    cat ${PZLFILE}
+    echo
+else
+    PZLFILE=$(echo "${ARGS}" | tr -d ' ')
+fi
+[ "${VERBOSE}" = "true" ] && echo "[verbose] PZLFILE: ${PZLFILE}"
+[ ! -r "${PZLFILE}"     ] && echo "ERROR: could not read ${PZLFILE}" && exit 1
+
+########################################################################################
+##
+## Display the results to STDOUT
+##
+[ "${DOLABEL}" = "true" ] && echo "Relational Chains:" && echo && echo "  * " && echo
+
+########################################################################################
+##
+## Remove temporary files
+##
+rm -f ${PZLTMP}
+
+exit 0

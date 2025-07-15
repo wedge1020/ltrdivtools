@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+### 
+### rangetable - generate a puzzle range table in ASCII
+### 
+###       usage: rangetable BASE "SYMBOLS"
+###              rangetable PUZZLEFILE
+###              rangetable < PUZZLEFILE
+### 
+###    options - description
+###    =======   =====================================================================
+###    nolabel - do not display content label
+###    verbose - display runtime variable values
+###      debug - enable bash debug mode
+###       help - display this usage information and exit
+### 
+### NOTE: redirecting in the PUZZLEFILE causes the original puzzle to also be shown
+### 
+### NOTE: labels are on by default, and the LABEL environment variable can influence
+###       this behaviour (set to "true" or "false")
+### 
+########################################################################################
+
+########################################################################################
+##
+## Establish runtime variables
+##
+NUMBERS="0123456789ABCDEF"
+PZLTMP=$(mktemp -p /tmp rangetable.XXXX)
+REGEX='\<(debug|nolabel|verbose|help)\>'
+
+########################################################################################
+##
+## Process arguments
+##
+DOLABEL=$(echo "${*}"    | egrep -qio '\<nolabel\>' && echo "false" || echo "true")
+VERBOSE=$(echo "${*}"    | egrep -qio '\<verbose\>' && echo "true"  || echo "false")
+DEBUG=$(echo   "${*}"    | egrep -qio '\<debug\>'   && echo "true"  || echo "false")
+DOHELP=$(echo  "${*}"    | egrep -qio '\<help\>'    && echo "true"  || echo "false")
+ARGS=$(echo    "${*}"    | tr ' ' '\n' | egrep -v "${REGEX}" | tr '\n' ' ')
+ARGS=$(echo    "${ARGS}" | grep -v '^[ ]*$')
+[ "${LABEL}" = "false" ] && DOLABEL="false"
+
+########################################################################################
+##
+## Be verbose, if enabled
+##
+if [ "${VERBOSE}" = "true" ]; then
+    echo "[verbose] VERBOSE: ${VERBOSE}"
+    echo "[verbose] PZLTMP:  ${PZLTMP}"
+    echo "[verbose] ARGS:    ${ARGS}"
+    echo "[verbose] DOLABEL: ${DOLABEL}"
+    echo "[verbose] DEBUG:   ${DEBUG}"
+    echo "[verbose] DOHELP:  ${DOHELP}"
+fi
+
+########################################################################################
+##
+## Transact argument functionality
+##
+[ "${DEBUG}"  = "true" ] && set -x
+[ "${DOHELP}" = "true" ] && cat ${0} | grep '^### ' | sed 's/### //g' && exit 0
+
+########################################################################################
+##
+## Check for STDIN redirection, otherwise assume file
+##
+if [   -z "${ARGS}" ]; then
+    cat                                                                   >  ${PZLTMP}
+    cat ${PZLTMP}
+    echo
+    PZLFILE="${PZLTMP}"
+else
+    PZLFILE=$(echo "${ARGS}" | tr -d ' ')
+fi
+
+########################################################################################
+##
+## Reading BASE and SYMBOLS from PUZZLEFILE
+##
+if [   -e "${PZLFILE}" ]; then
+    BASE=$(cat    ${PZLFILE}  | grep '^base: '      | cut -d' ' -f2)
+    SYMBOLS=$(cat ${PZLFILE}  | grep '^symbols: '   | cut -d' ' -f2)
+
+    if [ "${VERBOSE}" = "true" ]; then
+        echo "[verbose] BASE:    ${BASE}"
+        echo "[verbose] SYMBOLS: ${SYMBOLS}"
+    fi
+
+########################################################################################
+##
+## Setting BASE and SYMBOLS from command-line arguments
+##
+else
+    BASE=$(echo    "${ARGS}" | cut -d' ' -f1)
+    if [ -z "${BASE}" ]; then
+        echo "ERROR: BASE must be specified as first argument!"
+        exit 1
+    fi
+
+    SYMBOLS=$(echo "${ARGS}" | cut -d' ' -f2 -s)
+    if [ -z "${SYMBOLS}" ]; then
+        echo "ERROR: SYMBOLS must be specified as second argument!"
+        exit 2
+    fi
+fi
+
+########################################################################################
+##
+## Obtain RANGE, convert SYMBOLS to iterable form
+##
+RANGE=$(echo   "${NUMBERS}" | cut -c1-${BASE})
+RANGE=$(echo   "${RANGE}"   | sed 's/\(.\)/\1 /g' | sed 's/  */ /g')
+SYMBOLS=$(echo "${SYMBOLS}" | sed 's/\(.\)/\1 /g' | sed 's/  */ /g')
+
+if [ "${VERBOSE}" = "true" ]; then
+    echo "[verbose] RANGE:   ${RANGE}"
+    echo "[verbose] SYMBOLS: ${SYMBOLS}"
+fi
+
+########################################################################################
+##
+## Display heading/key
+##
+[ "${DOLABEL}" = "true" ] && echo "Range Table:" && echo
+echo -n     "      "
+for number in ${RANGE}; do
+    echo -n "${number} "
+done
+echo
+
+########################################################################################
+##
+## Fill out space below heading/key
+##
+echo -n     "      "
+for number in ${RANGE}; do
+    echo -n "  "
+done
+echo
+
+########################################################################################
+##
+## Insert a gap between the heading/key and the range table
+##
+echo
+
+########################################################################################
+##
+## Display each row of SYMBOLS
+##
+for symbol in ${SYMBOLS}; do
+    echo -n "${symbol} = { "
+    for number in ${RANGE}; do
+        echo -n "${number} "
+    done
+    echo "}"
+done
+
+rm -f ${PZLTMP}
+
+exit 0
