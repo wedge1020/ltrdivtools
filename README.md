@@ -19,8 +19,25 @@ The following scripts are available for use:
 ## usage
 Use individually, or together in a command-line pipeline to generate content that assists with manual letter division puzzle solving.
 
+### in action
 For example:
 
 ```
 $ cat puzzle | borrowtakes | rangetable
 ```
+
+or:
+
+```
+$ borrowtakes puzzle
+```
+
+Tools support direct file access or STDIN redirection (a la pipeline) to use in the scenario that offers greatest productivity.
+
+### getting help
+Each tool accepts 'help' as a command-line argument, which will display its particular usage information and exit:
+
+```
+$ relationalchains help
+```
+
