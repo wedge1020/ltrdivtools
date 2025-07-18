@@ -1,27 +1,17 @@
 #!/usr/bin/env bash
 ### 
-###  rangetable - generate a puzzle range table in ASCII
+### rangetable - generate a puzzle range table in ASCII
 ### 
-###        usage: rangetable [OPTION..] BASE "SYMBOLS"
-###               rangetable [OPTION..] PUZZLEFILE
-###               rangetable [OPTION..] < PUZZLEFILE
+###       usage: rangetable BASE "SYMBOLS"
+###              rangetable PUZZLEFILE
+###              rangetable < PUZZLEFILE
 ### 
-###     options - description
-### ===========   ====================================================================
-###     setSYM= - manipulates SYM in some fashion (see below)
-###     nolabel - do not display content label
-###     verbose - display runtime variable values
-###       debug - enable bash debug mode
-###        help - display this usage information and exit
-### 
-### setSYM=args - description 
-### ===========   ====================================================================
-###    aboveby# - raises the lower bound of possibilities for SYM by #
-###   aboveSYM2 - raises the lower bound of possibilities for SYM above lower of SYM2 
-###    belowby# - lowers the upper bound of possibilities for SYM by #
-###   belowSYM2 - lowers the upper bound of possibilities for SYM below upper for SYM2
-###     default - resets range of possibilities for SYM to default
-###   value="#" - sets possibilities of SYM to set value(s) (value appends to setSYM)
+###    options - description
+###    =======   =====================================================================
+###    nolabel - do not display content label
+###    verbose - display runtime variable values
+###      debug - enable bash debug mode
+###       help - display this usage information and exit
 ### 
 ### NOTE: redirecting in the PUZZLEFILE causes the original puzzle to also be shown
 ### 
@@ -37,9 +27,6 @@
 NUMBERS="0123456789ABCDEF"
 PZLTMP=$(mktemp -p /tmp rangetable.XXXX)
 REGEX='\<(debug|nolabel|verbose|help)\>'
-SETRE="\<(set.=aboveby[1-9][0-9]*|set.=above[0-9A-F][0-9A-F]*"
-SETRE="${SETRE}|set.=belowby[1-9][0-9]*|set.=below."
-SETRE="${SETRE}|set.=default|set.value=..*)\>"
 
 ########################################################################################
 ##
@@ -49,8 +36,7 @@ DOLABEL=$(echo "${*}"    | egrep -qio '\<nolabel\>' && echo "false" || echo "tru
 VERBOSE=$(echo "${*}"    | egrep -qio '\<verbose\>' && echo "true"  || echo "false")
 DEBUG=$(echo   "${*}"    | egrep -qio '\<debug\>'   && echo "true"  || echo "false")
 DOHELP=$(echo  "${*}"    | egrep -qio '\<help\>'    && echo "true"  || echo "false")
-SETARGS=$(echo "${*}"    | tr ' ' '\n' | egrep    "${SETRE}" | tr '\n' ' ') 
-ARGS=$(echo    "${*}"    | tr ' ' '\n' | egrep -v "${REGEX}" | egrep -v "${SETRE}" | tr '\n' ' ')
+ARGS=$(echo    "${*}"    | tr ' ' '\n' | egrep -v "${REGEX}" | tr '\n' ' ')
 ARGS=$(echo    "${ARGS}" | grep -v '^[ ]*$')
 [ "${LABEL}" = "false" ] && DOLABEL="false"
 
@@ -62,32 +48,10 @@ if [ "${VERBOSE}" = "true" ]; then
     echo "[verbose] VERBOSE: ${VERBOSE}"
     echo "[verbose] PZLTMP:  ${PZLTMP}"
     echo "[verbose] ARGS:    ${ARGS}"
-    echo "[verbose] SETARGS: ${SETARGS}"
     echo "[verbose] DOLABEL: ${DOLABEL}"
     echo "[verbose] DEBUG:   ${DEBUG}"
     echo "[verbose] DOHELP:  ${DOHELP}"
 fi
-
-########################################################################################
-##
-## Phase 2: process 'set' arguments
-##
-DLST=$(echo    "${SETARGS}" | tr ' ' '\n' | grep '\<set.=default\>' | tr '\n' ' ')
-DLST=$(echo    "${DLST}"    | sed 's/set\(.\)=default/\1/g')
-REGEX='\<set.value=[0-9A-F][0-9A-F]*\>'
-VLST=$(echo    "${SETARGS}" | tr ' ' '\n' | grep "${REGEX}" | tr '\n' ' ')
-VLST=$(echo    "${VLST}"    | sed 's/set\(.\)value=\([0-9A-F][0-9A-F]*\)/\1=\2/g')
-REGEX='\<set.=aboveby[1-9][0-9]*\>'
-ABLST=$(echo   "${SETARGS}" | tr ' ' '\n' | grep "${REGEX}" | tr '\n' ' ')
-ABLST=$(echo   "${ABLST}"   | sed 's/set\(.\)=aboveby\([1-9][0-9]*\)/\1+\2/g')
-REGEX='\<set.=above[0-9A-Z][0-9A-Z]*\>'
-ALST=$(echo    "${SETARGS}" | tr ' ' '\n' | grep "${REGEX}" | tr '\n' ' ')
-ALST=$(echo    "${ALST}"    | sed 's/set\(.\)=above\([0-9A-Z][0-9A-Z]*\)/\1>>\2/g')
-echo "DLST:  ${DLST}"
-echo "VLST:  ${VLST}"
-echo "ABLST: ${ABLST}"
-echo "ALST:  ${ALST}"
-exit
 
 ########################################################################################
 ##

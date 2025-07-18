@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 ### 
 ### relationalchains - a script to generate initial relational chains content for
-###                    a puzzle solving experience, and if chains exist,  to show
-###                    them. The script will also manage adding new clues and the
-###                    construction of compound chains.
+###                    a puzzle solving experience.
 ### 
 ###        usage: relationalchains [OPTION..] PUZZLE
 ###               relationalchains [OPTION..] < PUZZLE
-###               relationalchains add "X << Y" PUZZLE
 ###    
 ###      option - description 
 ###     =======   ====================================================================
-###         add - incorporate a new relational clue into the database (takes string)
-###      remove - remove a relational clue from the database (takes string)
 ###     nolabel - do not display content label
 ###       debug - enable bash debugging
 ###     verbose - display variable information during runtime
@@ -27,7 +22,6 @@
 ##
 ## Declare variables
 ##
-declare -A clues
 PZLTMP=$(mktemp -p /tmp relationalchains.XXXX)
 REGEX='\<(nolabel|verbose|debug|help)\>'
 
