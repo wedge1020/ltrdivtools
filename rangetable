@@ -66,8 +66,9 @@ fi
 ##
 if [   -z "${ARGS}" ]; then
     cat                                                                   >  ${PZLTMP}
+    chk=$(tail -1 ${PZLTMP} | grep '^[ ]*$' | wc -l)
+    [ "${chk}" -eq 0 ] && echo                                           >> ${PZLTMP}
     cat ${PZLTMP}
-    echo
     PZLFILE="${PZLTMP}"
 else
     PZLFILE=$(echo "${ARGS}" | tr -d ' ')
