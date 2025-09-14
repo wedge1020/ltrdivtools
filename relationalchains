@@ -112,23 +112,46 @@ if [ "${DOJOIN}" = "true" ]; then
         cat pzl.clues.tmp                                             >  pzl.clues
     done
 
-    for ((index=0; index<2; index++)); do
-        CLUE_LIST=$(cat pzl.clues | egrep -o '[^<]<<[^<]')
+#    for ((index=0; index<2; index++)); do
+#        CLUE_LIST=$(cat pzl.clues | egrep -o '[^<]<<[^<]')
+#        #CLUE_LIST=$(cat pzl.clues | egrep -o '[^<]<<([^<]|([^<]<)*)')
+#        for clue in ${CLUE_LIST}; do
+#            left=$(echo  "${clue}" | sed 's/<</:/g' | cut -d':' -f1)
+#            right=$(echo "${clue}" | sed 's/<</:/g' | cut -d':' -f2)
+#            echo "clue: ${clue}"
+#            SEDEXP="/${clue}/!s/${left}/${clue}/g"
+#            cat pzl.clues     | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues.tmp
+#            SEDEXP="/${clue}/!s/${right}/${clue}/g"
+#            cat pzl.clues.tmp | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues
+#            cchk=$(cat pzl.clues | grep "${clue}" | wc -l)
+#            [ "${cchk}" -eq 0 ] && echo "${clue}"                     >> pzl.clues
+#            cat pzl.clues | sort | uniq                               >  pzl.clues.tmp
+#            cat pzl.clues.tmp
+#            CLUE_LIST="${CLUE_LIST} $(cat pzl.clues.tmp | grep -o '[^<]<[^<]')"
+#            CLUE_LIST=$(echo "${CLUE_LIST}" | tr ' ' '\n' | sort | uniq)
+#            echo "----"
+#        done
+#        cat pzl.clues.tmp                                             >  pzl.clues
+#    done
+
+    for ((index=0; index<10; index++)); do
+		CLUE_LIST=$(cat pzl.clues | egrep -o '[^<]<<[^<](<[^<])*')
         #CLUE_LIST=$(cat pzl.clues | egrep -o '[^<]<<([^<]|([^<]<)*)')
         for clue in ${CLUE_LIST}; do
             left=$(echo  "${clue}" | sed 's/<</:/g' | cut -d':' -f1)
             right=$(echo "${clue}" | sed 's/<</:/g' | cut -d':' -f2)
             echo "clue: ${clue}"
-            SEDEXP="/${clue}/!s/${left}/${clue}/g"
+            SEDEXP="/${clue}/!s/${left}$/${clue}/g"
             cat pzl.clues     | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues.tmp
-            SEDEXP="/${clue}/!s/${right}/${clue}/g"
+            SEDEXP="/${clue}/!s/^${right}/${clue}/g"
             cat pzl.clues.tmp | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues
             cchk=$(cat pzl.clues | grep "${clue}" | wc -l)
             [ "${cchk}" -eq 0 ] && echo "${clue}"                     >> pzl.clues
             cat pzl.clues | sort | uniq                               >  pzl.clues.tmp
             cat pzl.clues.tmp
-            CLUE_LIST="${CLUE_LIST} $(cat pzl.clues.tmp | grep -o '[^<]<[^<]')"
-            CLUE_LIST=$(echo "${CLUE_LIST}" | tr ' ' '\n' | sort | uniq)
+            #CLUE_LIST="${CLUE_LIST} $(cat pzl.clues.tmp | grep -o '[^<]<[^<]')"
+            #CLUE_LIST="${CLUE_LIST} $(cat pzl.clues.tmp | grep -o \"${clue}\")"
+            #CLUE_LIST=$(echo "${CLUE_LIST}" | tr ' ' '\n' | sort | uniq)
             echo "----"
         done
         cat pzl.clues.tmp                                             >  pzl.clues
