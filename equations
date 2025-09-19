@@ -77,7 +77,13 @@ fi
 ##
 ## Display the results to STDOUT
 ##
-[ "${DOLABEL}" = "true" ] && echo "Equations:" && echo && echo "  * " && echo
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Equations:"
+    echo "========="
+    echo
+    echo "  * "
+    echo
+fi
 
 ########################################################################################
 ##

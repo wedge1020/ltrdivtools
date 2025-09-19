@@ -79,6 +79,7 @@ fi
 ##
 if [ "${DOLABEL}" = "true" ]; then
     echo "Relational Chains:"
+    echo "================="
     echo
     hchk=$(cat ${PZLFILE} | grep '^hints:' | wc -l)
     if [ "${hchk}" -gt 0 ]; then

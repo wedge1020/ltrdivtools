@@ -63,8 +63,8 @@ fi
 ##
 if [ -z "${ARGS}" ]; then
     cat                                                                  >  ${PZLTMP}
-	chk=$(tail -1 ${PZLTMP} | grep '^[ ]*$' | wc -l)
-	[ "${chk}" -eq 0 ] && echo                                           >> ${PZLTMP}
+    chk=$(tail -1 ${PZLTMP} | grep '^[ ]*$' | wc -l)
+    [ "${chk}" -eq 0 ] && echo                                           >> ${PZLTMP}
     PZLFILE="${PZLTMP}"
     cat ${PZLFILE}
 else
@@ -94,7 +94,11 @@ cat ${PZLTMP}H | cut -c$((${DSORLEN}+1))- | sed "s/\(.\)/ \1/g"          >  ${PZ
 ##
 ## Display the results to STDOUT
 ##
-[ "${DOLABEL}" = "true" ] && echo "Borrows and Takes:" && echo
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Borrows and Takes:"
+    echo "================="
+    echo
+fi
 paste -d '' ${PZLTMP} ${PZLTMP}2
 #cat ${PZLTMP}F
 

@@ -122,7 +122,11 @@ fi
 ##
 ## Display heading/key
 ##
-[ "${DOLABEL}" = "true" ] && echo "Range Table:" && echo
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Range Table:"
+    echo "==========="
+    echo
+fi
 echo -n     "      "
 for number in ${RANGE}; do
     echo -n "${number} "
