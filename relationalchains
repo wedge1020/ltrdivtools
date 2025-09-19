@@ -70,6 +70,7 @@ done                                                                  >  pzl.clu
 ##
 function one_less_than()
 {
+    # idea: what if i don't remove old clues, leaving them until i eliminate themredundants
     NEW_MD5=$(cat pzl.clues | md5sum | cut -d' ' -f1)
     OLD_MD5=0
     while [ ! "${NEW_MD5}" = "${OLD_MD5}" ]; do
@@ -79,8 +80,10 @@ function one_less_than()
             right=$(echo "${clue}" | cut -d'<' -f2)
             SEDEXP="/${clue}/!s/${left}/${clue}/g"
             cat pzl.clues     | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues.tmp
+            #cat pzl.clues     | sed "${SEDEXP}" >  pzl.clues.tmp
             SEDEXP="/${clue}/!s/${right}/${clue}/g"
             cat pzl.clues.tmp | grep -v "^${clue}$" | sed "${SEDEXP}" >  pzl.clues
+            #cat pzl.clues.tmp | sed "${SEDEXP}" >  pzl.clues
             cchk=$(cat pzl.clues | grep "${clue}" | wc -l)
             [ "${cchk}" -eq 0 ] && echo "${clue}"                     >> pzl.clues
             cat pzl.clues | sort | uniq                               >  pzl.clues.tmp
@@ -154,17 +157,17 @@ function eliminate_redundant_fragments()
 
 if [ "${DOJOIN}" = "true" ]; then
 
-	echo "exactly one less than"
+    echo "exactly one less than"
     one_less_than
-	echo "somewhat less than"
+    echo "somewhat less than"
     somewhat_less_than
-	echo "exactly one less than"
+    echo "exactly one less than"
     one_less_than
-	echo "somewhat less than"
+    echo "somewhat less than"
     somewhat_less_than
-	echo "eliminate redundant fragments"
-	eliminate_redundant_fragments
-	echo "resulting clueset:"
+    echo "eliminate redundant fragments"
+    eliminate_redundant_fragments
+    echo "resulting clueset:"
     cat pzl.clues
     exit
     rm -f pzl.clues pzl.clues.tmp
