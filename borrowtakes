@@ -84,8 +84,7 @@ let DSORLEN=DSORLEN+3
 ##
 ## Reformat the puzzle body based on divisor length (DSORLEN)
 ##
-#cat ${PZLFILE} | egrep    ':|^$'                                         >  ${PZLTMP}F
-cat ${PZLFILE} | egrep -v ':|^$'                                         >  ${PZLTMP}H
+cat ${PZLFILE} | egrep -v ':|^$|{|}|0 1|^=|\*|<'                         >  ${PZLTMP}H
 cat ${PZLTMP}H | cut -c1-${DSORLEN}                                      >  ${PZLTMP}
 cat ${PZLTMP}H | cut -c$((${DSORLEN}+1))- | sed "s/\(.\)/ \1/g"          >  ${PZLTMP}2
 
@@ -95,7 +94,6 @@ cat ${PZLTMP}H | cut -c$((${DSORLEN}+1))- | sed "s/\(.\)/ \1/g"          >  ${PZ
 ##
 [ "${DOLABEL}" = "true" ] && echo "Borrows and Takes:" && echo
 paste -d '' ${PZLTMP} ${PZLTMP}2
-#cat ${PZLTMP}F
 
 ########################################################################################
 ##
