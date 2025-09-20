@@ -155,9 +155,18 @@ fi
 
 ########################################################################################
 ##
+## If enabled, display section
+##
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Range Table:"
+    echo "==========="
+    echo
+fi
+
+########################################################################################
+##
 ## Display heading/key
 ##
-[ "${DOLABEL}" = "true" ] && echo "Range Table:" && echo
 echo -n     "      "
 for number in ${RANGE}; do
     echo -n "${number} "

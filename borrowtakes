@@ -90,9 +90,18 @@ cat ${PZLTMP}H | cut -c$((${DSORLEN}+1))- | sed "s/\(.\)/ \1/g"          >  ${PZ
 
 ########################################################################################
 ##
+## If enabled, display the section
+##
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Borrows and Takes:"
+    echo "================="
+    echo
+fi
+
+########################################################################################
+##
 ## Display the results to STDOUT
 ##
-[ "${DOLABEL}" = "true" ] && echo "Borrows and Takes:" && echo
 paste -d '' ${PZLTMP} ${PZLTMP}2
 
 ########################################################################################

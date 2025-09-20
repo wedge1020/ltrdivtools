@@ -63,9 +63,10 @@ fi
 ##
 if [ -z "${ARGS}" ]; then
     cat                                                                  >  ${PZLTMP}
+    chk=$(tail -1 ${PZLTMP} | grep '^[ ]*$' | wc -l)
+    [ "${chk}" -eq 0 ] && echo                                           >> ${PZLTMP}
     PZLFILE="${PZLTMP}"
     cat ${PZLFILE}
-    echo
 else
     PZLFILE=$(echo "${ARGS}" | tr -d ' ')
 fi
@@ -76,7 +77,13 @@ fi
 ##
 ## Display the results to STDOUT
 ##
-[ "${DOLABEL}" = "true" ] && echo "Equations:" && echo && echo "  * " && echo
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Equations:"
+    echo "========="
+    echo
+    echo "  * "
+    echo
+fi
 
 ########################################################################################
 ##

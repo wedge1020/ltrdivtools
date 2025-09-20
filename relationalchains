@@ -234,7 +234,13 @@ fi
 ##
 ## Display the results to STDOUT
 ##
-[ "${DOLABEL}" = "true" ] && echo "Relational Chains:" && echo && echo "  * " && echo
+if [ "${DOLABEL}" = "true" ]; then
+    echo "Relational Chains:"
+    echo "================="
+    echo
+    echo "  * "
+    echo
+fi
 
 ########################################################################################
 ##
