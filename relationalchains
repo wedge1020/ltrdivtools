@@ -75,27 +75,32 @@ fi
 
 ########################################################################################
 ##
-## Display the results to STDOUT
+## If enabled, display section
 ##
 if [ "${DOLABEL}" = "true" ]; then
     echo "Relational Chains:"
     echo "================="
     echo
-    hchk=$(cat ${PZLFILE} | grep '^hints:' | wc -l)
-    if [ "${hchk}" -gt 0 ]; then
-        hints=$(grep '^hints:' ${PZLFILE} | cut -d':' -f2 | tr -d ' ' | tr ',' ' ')
-        SEDEXP='\([A-Za-z0-9]\)\(<<\?\)\([A-Za-z0-9]\)'
-        for hint in ${hints}; do
-            echo "  * ${hint}" | sed "s/^  \* ${SEDEXP}$/  * \1 \2 \3/g"
-        done
-    else
-        echo "  * "
-    fi
-    echo
-    echo "NOTE: '<'  denotes EXACTLY ONE less than"
-    echo "      '<<' denotes SOMEWHAT less than"
-    echo
 fi
+
+########################################################################################
+##
+## Display the results to STDOUT
+##
+hchk=$(cat ${PZLFILE} | grep '^hints:' | wc -l)
+if [ "${hchk}" -gt 0 ]; then
+    hints=$(grep '^hints:' ${PZLFILE} | cut -d':' -f2 | tr -d ' ' | tr ',' ' ')
+    SEDEXP='\([A-Za-z0-9]\)\(<<\?\)\([A-Za-z0-9]\)'
+    for hint in ${hints}; do
+        echo "  * ${hint}" | sed "s/^  \* ${SEDEXP}$/  * \1 \2 \3/g"
+    done
+else
+    echo "  * "
+fi
+echo
+echo "NOTE: '<'  denotes EXACTLY ONE less than"
+echo "      '<<' denotes SOMEWHAT less than"
+echo
 
 ########################################################################################
 ##
